@@ -24,11 +24,23 @@ export default StyleSheet.create({
     },
 
     title: {
-        fontSize: 30,
         marginBottom: 16,
         marginTop: 48,
+
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+
+    titleText: {
         color: '#13131a',
         fontWeight: 'bold',
+        fontSize: 30,
+    },
+
+    reload: {
+        position: 'relative',
+        top: 3,
     },
 
     description: {

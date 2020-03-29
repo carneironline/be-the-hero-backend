@@ -1,18 +1,23 @@
 import React from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { View, FlatList, Image, Text, TouchableOpacity } from 'react-native'
-import { Feather } from '@expo/vector-icons'
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons'
 import api from '../../services/api'
 
 import styles from './styles'
 import logoImg from '../../assets/images/logo.png'
 
 export default function Incidents() {
+    const flatListRef = React.useRef()
     const [incidents, setIncidents] = React.useState([])
     const [totalIncidents, setTotalIncidents] = React.useState(0)
     const [page, setPage] = React.useState(1)
     const [loading, setLoading] = React.useState(false)
     const navigation = useNavigation()
+
+    const toTop = () => {
+        flatListRef.current.scrollToOffset({ offset: 0 })
+    }
 
     function navigateToDetail(incident) {
         navigation.navigate('Detail', { incident })
@@ -42,6 +47,33 @@ export default function Incidents() {
         }
     }
 
+    async function reLoadIncidents() {
+        if (
+            loading ||
+            (totalIncidents > 0 && incidents.length === totalIncidents)
+        )
+            return
+
+        setLoading(true)
+
+        try {
+            const response = await api.get('incidents', {
+                params: { page: 1 },
+            })
+
+            setIncidents([...response.data])
+            setTotalIncidents(response.headers['x-total-count'])
+            setPage(2)
+            setTimeout(() => {
+                toTop()
+            }, 500)
+        } catch (error) {
+            alert('Ops! Algo não deu certo :( Tente novamente')
+        } finally {
+            setLoading(false)
+        }
+    }
+
     React.useEffect(() => {
         loadIncidents()
     }, [])
@@ -58,12 +90,25 @@ export default function Incidents() {
                 </Text>
             </View>
 
-            <Text style={styles.title}>Bem Vindo </Text>
+            <View style={styles.title}>
+                <Text style={styles.titleText}>Bem Vindo</Text>
+                <TouchableOpacity
+                    style={styles.reload}
+                    onPress={reLoadIncidents}
+                >
+                    <MaterialCommunityIcons
+                        name='reload'
+                        size={30}
+                        color='#e02041'
+                    />
+                </TouchableOpacity>
+            </View>
             <Text style={styles.description}>
                 Escolha um dos casos abaixo e salve o dia
             </Text>
 
             <FlatList
+                ref={flatListRef}
                 style={styles.incidentList}
                 showsVerticalScrollIndicator={false}
                 data={incidents}
