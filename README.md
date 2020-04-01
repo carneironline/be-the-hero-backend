@@ -16,7 +16,7 @@ After cloning the project, access the three folders, backend, frontend and mobil
 yarn
 ```
 
-### Development dependencies
+### Dependencies
 
 - express
 - cross-env
@@ -26,7 +26,7 @@ yarn
 - sqlite3
 
 
-### Dependencies
+### Development dependencies
 
 - eslint
 - prettier
